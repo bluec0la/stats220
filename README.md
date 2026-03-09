@@ -12,8 +12,8 @@
 ## Some links to some websites:
 
 1. [YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
-2. [Google](www.google.com)
-3. [The New York Times](www.nytimes.com)
+2. [Google](https://www.google.com)
+3. [The New York Times](https://www.nytimes.com)
 
 A moose: 
 ![](https://media.tenor.com/awsHYVu4F5IAAAAM/moose-nature.gif)
