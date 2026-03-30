@@ -9,10 +9,13 @@ knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
 ```
 
 ```{css}
-* {
+body {
   font-family: 'Georgia', serif;
   color: #2c2c2c;
   line-height: 1.7;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 2.5rem;
 }
 h2 {
   color: #5c3d1e;
