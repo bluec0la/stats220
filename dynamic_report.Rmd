@@ -1,0 +1,117 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+```
+
+```{css}
+body {
+  font-family: 'Georgia', serif;
+  color: #2c2c2c;
+  max-width: 900px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+h2 {
+  color: #5c3d1e;
+  border-bottom: 2px solid #c8a97e;
+  padding-bottom: 6px;
+  margin-top: 2.5rem;
+}
+
+h3 {
+  color: #7a5230;
+  margin-top: 1.8rem;
+}
+
+p {
+  margin-bottom: 1.2rem;
+}
+```
+
+## What types of caffeinated drinks are drunk and when and how often?
+```{r}
+# owha093
+library(tidyverse)
+
+# Original data from the csv of the Google Sheets document
+original_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSrTrJiOVNUfgPwRw-5GxIjTyKTC4ZsE9SQdDnRMv8kirPrxxIbVr0UOqPxIj0ZMpqfOYaWbmB-DxsR/pub?output=csv")
+
+# Renaming variables
+caffeine_data <- original_data%>%rename(
+  drink_type = "What drink is this?",
+  drink_number = "What number drink is this today?",
+  day_of_week = "What day of the week is it?",
+  time_of_day = "What time of the day is it?"
+)
+
+# Converting time_of_day to an ordered factor (categorical var with specific ordering) so that 
+# it can be used in bar charts in order (i.e. x-axis 8am, 12pm, 3pm instead of 3pm, 8am, 12pm)
+caffeine_data <- caffeine_data%>%mutate(time_of_day = factor(time_of_day, levels = c(
+    "Before 8am",
+    "8am - 10am",
+    "10am - 12pm",
+    "12pm - 3pm",
+    "After 3pm"
+  )))
+# Same for days of the week
+caffeine_data <- caffeine_data%>%mutate(day_of_week = factor(day_of_week, levels = c(
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday"
+  )))
+
+```
+
+### What drinks are consumed at different times of the day?
+`r length(unique(caffeine_data$drink_type))` different types of caffeinated drinks were recorded: Energy drinks, coffee, cola and tea. 
+Both cola and tea were only drunk in the afternoon, whilst energy drinks were only drunk between 8 and 10am. Coffee was mostly drunk in the morning although also from 12pm-3pm. The most commonly consumed drink was cola, closely followed by coffee, followed by energy drinks and then tea.
+
+```{r}
+caffeine_data %>%
+  ggplot() +
+  geom_bar(aes(x = drink_type, fill = time_of_day)) +
+  labs(title = "What drinks are drunk at what times?",
+       x = "Drink Type",
+       y = "Number of drinks",
+       fill = "Time of Day")
+```
+
+
+### Which drinks are chosen earlier?
+The first drink of the day was always energy drinks or coffee whilst tea and cola were never chosen first, even with `r length(caffeine_data$drink_type)` responses to the poll.
+This likely reflects the fact that coffee and energy drinks contain much higher levels of caffeine and are partly drunk to mentally wake up for the day. Cola and tea were chosen as second and third drinks in the day, potentially due to caffeine's impact on sleep restricting drinkers from higher caffeine level choices closer to bed.
+
+```{r}
+caffeine_data %>%
+  ggplot() +
+  geom_bar(aes(x = factor(drink_number), fill = drink_type)) +
+  labs(title = "Which types of drinks are chosen first, second, third etc.?",
+       x = "Drink Number in the Day",
+       y = "Total Drink Count",
+       fill = "Drink Type")
+```
+
+### Does the day of the week impact the drinks chosen?
+There wasn't a strong correlation between the day of the week and the choice of caffeinated drinks, although there were slightly less caffeinated drinks drunk on the weekend compared to during the week. 
+
+The maximum number of drinks total that were drunk in one day was `r max(caffeine_data$drink_number)` and the minimum number of drinks total in a day was `r min(caffeine_data$drink_number)`.
+
+```{r}
+caffeine_data %>%
+  ggplot() +
+  geom_bar(aes(x = day_of_week, fill = drink_type)) +
+  labs(title = "Does the day of the week impact drink chosen?",
+       x = "Day of Week",
+       y = "Number of drinks",
+       fill = "Drink Type")
+```
